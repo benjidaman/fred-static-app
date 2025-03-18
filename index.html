@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRED M1 & M2 Chart</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>FRED M1 and M2 Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #controls { margin: 20px; }
+        canvas { max-width: 1000px; margin: 0 auto; display: block; }
+    </style>
 </head>
 <body>
-    <h1>M1 and M2 Money Supply</h1>
-    <canvas id="moneyChart" width="400" height="200"></canvas>
+    <div id="controls">
+        <label for="timeScale">Time Scale: </label>
+        <select id="timeScale">
+            <option value="all">All Time</option>
+            <option value="5y">Last 5 Years</option>
+            <option value="1y">Last 1 Year</option>
+            <option value="6m">Last 6 Months</option>
+        </select>
+        <label for="scaleType">Scale: </label>
+        <select id="scaleType">
+            <option value="linear">Linear</option>
+            <option value="logarithmic">Logarithmic</option>
+        </select>
+    </div>
+    <canvas id="fredChart"></canvas>
     <script src="script.js"></script>
 </body>
 </html>
