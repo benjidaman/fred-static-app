@@ -6,8 +6,26 @@
     <title>FRED M1 and M2 Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        #controls { margin: 20px; }
-        canvas { max-width: 1000px; margin: 0 auto; display: block; }
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        #controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #chartContainer {
+            width: 100%;
+            max-width: 1200px; /* Increased max-width for larger screens */
+            height: 600px; /* Set a reasonable height */
+            margin: 0 auto; /* Center the container */
+        }
+        #fredChart {
+            width: 100% !important;
+            height: 100% !important;
+            display: block; /* Ensure it behaves as a block element */
+        }
     </style>
 </head>
 <body>
@@ -25,7 +43,10 @@
             <option value="logarithmic">Logarithmic</option>
         </select>
     </div>
-    <canvas id="fredChart"></canvas>
+    <div id="chartContainer">
+        <canvas id="fredChart"></canvas>
+    </div>
     <script src="script.js"></script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'922163d53b776190',t:'MTc0MjI2NTg4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
