@@ -9,9 +9,15 @@ Promise.all([
     fetch(m1Url).then(res => res.json()),
     fetch(m2Url).then(res => res.json())
 ]).then(([m1, m2]) => {
-    m1Data = m1;
-    m2Data = m2;
-    renderChart('all', 'linear'); // Initial render
+    // Extract the 'observations' array from the fetched JSON
+    m1Data = m1.observations || []; // Fallback to empty array if observations is missing
+    m2Data = m2.observations || []; // Fallback to empty array if observations is missing
+
+    // Log data for debugging (optional, can remove later)
+    console.log('m1Data:', m1Data);
+    console.log('m2Data:', m2Data);
+
+    renderChart('all', 'linear'); // Initial render with default settings
 
     // Add event listeners for dropdowns
     document.getElementById('timeScale').addEventListener('change', (e) => {
@@ -27,6 +33,7 @@ function renderChart(timeScale, scaleType) {
     const now = new Date();
     let startDate;
 
+    // Set start date based on selected time scale
     switch (timeScale) {
         case '5y':
             startDate = new Date(now.setFullYear(now.getFullYear() - 5));
@@ -42,16 +49,22 @@ function renderChart(timeScale, scaleType) {
             startDate = null; // Show all data
     }
 
-    // Filter data
+    // Filter data based on the start date
     const filterData = (data) => {
-        if (!startDate) return data;
+        // Ensure data is an array; if not, return empty array to prevent errors
+        if (!Array.isArray(data)) {
+            console.error('Data is not an array:', data);
+            return [];
+        }
+        if (!startDate) return data; // Return all data if no start date
         return data.filter(d => new Date(d.date) >= startDate);
     };
 
+    // Apply filtering to M1 and M2 data
     const filteredM1 = filterData(m1Data);
     const filteredM2 = filterData(m2Data);
 
-    // Destroy existing chart if it exists
+    // Destroy existing chart if it exists to prevent overlap
     if (chart) chart.destroy();
 
     // Create new chart
@@ -59,17 +72,17 @@ function renderChart(timeScale, scaleType) {
     chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: filteredM1.map(d => d.date),
+            labels: filteredM1.map(d => d.date), // Extract dates for x-axis
             datasets: [
                 {
                     label: 'M1',
-                    data: filteredM1.map(d => d.value),
+                    data: filteredM1.map(d => parseFloat(d.value)), // Convert string values to numbers
                     borderColor: 'blue',
                     fill: false
                 },
                 {
                     label: 'M2',
-                    data: filteredM2.map(d => d.value),
+                    data: filteredM2.map(d => parseFloat(d.value)), // Convert string values to numbers
                     borderColor: 'green',
                     fill: false
                 }
