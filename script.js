@@ -89,10 +89,37 @@ function renderChart(timeScale, scaleType) {
             ]
         },
         options: {
+            responsive: true, // Makes the chart resize with its container
+            maintainAspectRatio: false, // Allows custom height and width
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 14 // Increase legend font size
+                        }
+                    }
+                }
+            },
             scales: {
-                x: { title: { display: true, text: 'Date' } },
+                x: { 
+                    title: { 
+                        display: true, 
+                        text: 'Date',
+                        font: { size: 16 } // Increase x-axis title font size
+                    },
+                    ticks: {
+                        font: { size: 12 } // Increase x-axis tick font size
+                    }
+                },
                 y: {
-                    title: { display: true, text: 'Value' },
+                    title: { 
+                        display: true, 
+                        text: 'Value',
+                        font: { size: 16 } // Increase y-axis title font size
+                    },
+                    ticks: {
+                        font: { size: 12 } // Increase y-axis tick font size
+                    },
                     type: scaleType // 'linear' or 'logarithmic'
                 }
             }
