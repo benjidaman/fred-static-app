@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRED M1 and M2 Chart</title>
+    <title>FRED M1 and M2 Data</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -17,36 +17,128 @@
         }
         #chartContainer {
             width: 100%;
-            max-width: 1000px; /* Reduced from 1200px to 1000px */
-            height: 350px; /* Reduced from 400px to 350px */
-            margin: 0 auto; /* Center the container */
+            max-width: 1000px;
+            height: 350px;
+            margin: 0 auto;
         }
         #fredChart {
             width: 100% !important;
             height: 100% !important;
-            display: block; /* Ensure it behaves as a block element */
+            display: block;
+        }
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+        .tab button {
+            background-color: #f1f1f1;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <label for="timeScale">Time Scale: </label>
-        <select id="timeScale">
-            <option value="all">All Time</option>
-            <option value="5y">Last 5 Years</option>
-            <option value="1y">Last 1 Year</option>
-            <option value="6m">Last 6 Months</option>
-        </select>
-        <label for="scaleType">Scale: </label>
-        <select id="scaleType">
-            <option value="linear">Linear</option>
-            <option value="logarithmic">Logarithmic</option>
-        </select>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Chart')" id="defaultOpen">Chart</button>
+        <button class="tablinks" onclick="openTab(event, 'DataFiles')">Data Files</button>
     </div>
-    <div id="chartContainer">
-        <canvas id="fredChart"></canvas>
+
+    <div id="Chart" class="tabcontent">
+        <div id="controls">
+            <label for="timeScale">Time Scale: </label>
+            <select id="timeScale">
+                <option value="all">All Time</option>
+                <option value="5y">Last 5 Years</option>
+                <option value="1y">Last 1 Year</option>
+                <option value="6m">Last 6 Months</option>
+            </select>
+            <label for="scaleType">Scale: </label>
+            <select id="scaleType">
+                <option value="linear">Linear</option>
+                <option value="logarithmic">Logarithmic</option>
+            </select>
+        </div>
+        <div id="chartContainer">
+            <canvas id="fredChart"></canvas>
+        </div>
     </div>
+
+    <div id="DataFiles" class="tabcontent">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Data File</th>
+                    <th>Description</th>
+                    <th>Last Updated</th>
+                    <th>Availability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>M1</td>
+                    <td>M1 Money Stock (currency, demand deposits, etc.) from FRED</td>
+                    <td>March 22, 2025</td>
+                    <td>Weekly, typically updated on Mondays</td>
+                </tr>
+                <tr>
+                    <td>M2</td>
+                    <td>M2 Money Stock (M1 plus savings accounts, etc.) from FRED</td>
+                    <td>March 22, 2025</td>
+                    <td>Weekly, typically updated on Mondays</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <script src="script.js"></script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'922163d53b776190',t:'MTc0MjI2NTg4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Open the "Chart" tab by default
+        document.getElementById("defaultOpen").click();
+    </script>
 </body>
 </html>

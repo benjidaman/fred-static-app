@@ -9,17 +9,14 @@ Promise.all([
     fetch(m1Url).then(res => res.json()),
     fetch(m2Url).then(res => res.json())
 ]).then(([m1, m2]) => {
-    // Extract the 'observations' array from the fetched JSON
-    m1Data = m1.observations || []; // Fallback to empty array if observations is missing
-    m2Data = m2.observations || []; // Fallback to empty array if observations is missing
+    m1Data = m1.observations || [];
+    m2Data = m2.observations || [];
 
-    // Log data for debugging (optional, can remove later)
     console.log('m1Data:', m1Data);
     console.log('m2Data:', m2Data);
 
-    renderChart('all', 'linear'); // Initial render with default settings
+    renderChart('all', 'linear'); // Initial render
 
-    // Add event listeners for dropdowns
     document.getElementById('timeScale').addEventListener('change', (e) => {
         renderChart(e.target.value, document.getElementById('scaleType').value);
     });
@@ -33,7 +30,6 @@ function renderChart(timeScale, scaleType) {
     const now = new Date();
     let startDate;
 
-    // Set start date based on selected time scale
     switch (timeScale) {
         case '5y':
             startDate = new Date(now.setFullYear(now.getFullYear() - 5));
@@ -46,57 +42,50 @@ function renderChart(timeScale, scaleType) {
             break;
         case 'all':
         default:
-            startDate = null; // Show all data
+            startDate = null;
     }
 
-    // Filter data based on the start date
     const filterData = (data) => {
-        // Ensure data is an array; if not, return empty array to prevent errors
         if (!Array.isArray(data)) {
             console.error('Data is not an array:', data);
             return [];
         }
-        if (!startDate) return data; // Return all data if no start date
+        if (!startDate) return data;
         return data.filter(d => new Date(d.date) >= startDate);
     };
 
-    // Apply filtering to M1 and M2 data
     const filteredM1 = filterData(m1Data);
     const filteredM2 = filterData(m2Data);
 
-    // Destroy existing chart if it exists to prevent overlap
     if (chart) chart.destroy();
 
-    // Create new chart
     const ctx = document.getElementById('fredChart').getContext('2d');
     chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: filteredM1.map(d => d.date), // Extract dates for x-axis
+            labels: filteredM1.map(d => d.date),
             datasets: [
                 {
                     label: 'M1',
-                    data: filteredM1.map(d => parseFloat(d.value)), // Convert string values to numbers
+                    data: filteredM1.map(d => parseFloat(d.value)),
                     borderColor: 'blue',
                     fill: false
                 },
                 {
                     label: 'M2',
-                    data: filteredM2.map(d => parseFloat(d.value)), // Convert string values to numbers
+                    data: filteredM2.map(d => parseFloat(d.value)),
                     borderColor: 'green',
                     fill: false
                 }
             ]
         },
         options: {
-            responsive: true, // Makes the chart resize with its container
-            maintainAspectRatio: false, // Allows custom height and width
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     labels: {
-                        font: {
-                            size: 14 // Increase legend font size
-                        }
+                        font: { size: 14 }
                     }
                 }
             },
@@ -105,22 +94,18 @@ function renderChart(timeScale, scaleType) {
                     title: { 
                         display: true, 
                         text: 'Date',
-                        font: { size: 16 } // Increase x-axis title font size
+                        font: { size: 16 }
                     },
-                    ticks: {
-                        font: { size: 12 } // Increase x-axis tick font size
-                    }
+                    ticks: { font: { size: 12 } }
                 },
                 y: {
                     title: { 
                         display: true, 
                         text: 'Value',
-                        font: { size: 16 } // Increase y-axis title font size
+                        font: { size: 16 }
                     },
-                    ticks: {
-                        font: { size: 12 } // Increase y-axis tick font size
-                    },
-                    type: scaleType // 'linear' or 'logarithmic'
+                    ticks: { font: { size: 12 } },
+                    type: scaleType
                 }
             }
         }
