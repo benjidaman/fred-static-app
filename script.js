@@ -1,10 +1,9 @@
 const m1Url = 'https://freddatastorage123.blob.core.windows.net/fred-data/m1.json';
 const m2Url = 'https://freddatastorage123.blob.core.windows.net/fred-data/m2.json';
 
-let chart; // Store chart instance globally for updates
-let m1Data, m2Data; // Store raw data
+let chart;
+let m1Data, m2Data;
 
-// Fetch data and initialize chart
 Promise.all([
     fetch(m1Url).then(res => res.json()),
     fetch(m2Url).then(res => res.json())
@@ -15,7 +14,9 @@ Promise.all([
     console.log('m1Data:', m1Data);
     console.log('m2Data:', m2Data);
 
-    renderChart('all', 'linear'); // Initial render
+    renderChart('all', 'linear');
+    updateStats();
+    populateDataTable();
 
     document.getElementById('timeScale').addEventListener('change', (e) => {
         renderChart(e.target.value, document.getElementById('scaleType').value);
@@ -25,7 +26,6 @@ Promise.all([
     });
 }).catch(err => console.error('Error fetching data:', err));
 
-// Function to filter data by time scale and render chart
 function renderChart(timeScale, scaleType) {
     const now = new Date();
     let startDate;
@@ -46,10 +46,7 @@ function renderChart(timeScale, scaleType) {
     }
 
     const filterData = (data) => {
-        if (!Array.isArray(data)) {
-            console.error('Data is not an array:', data);
-            return [];
-        }
+        if (!Array.isArray(data)) return [];
         if (!startDate) return data;
         return data.filter(d => new Date(d.date) >= startDate);
     };
@@ -68,14 +65,16 @@ function renderChart(timeScale, scaleType) {
                 {
                     label: 'M1',
                     data: filteredM1.map(d => parseFloat(d.value)),
-                    borderColor: 'blue',
-                    fill: false
+                    borderColor: '#ff6200',
+                    fill: false,
+                    tension: 0.1
                 },
                 {
                     label: 'M2',
                     data: filteredM2.map(d => parseFloat(d.value)),
-                    borderColor: 'green',
-                    fill: false
+                    borderColor: '#4682b4',
+                    fill: false,
+                    tension: 0.1
                 }
             ]
         },
@@ -84,30 +83,48 @@ function renderChart(timeScale, scaleType) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    labels: {
-                        font: { size: 14 }
-                    }
+                    position: 'top',
+                    labels: { font: { size: 12 } }
                 }
             },
             scales: {
-                x: { 
-                    title: { 
-                        display: true, 
-                        text: 'Date',
-                        font: { size: 16 }
-                    },
-                    ticks: { font: { size: 12 } }
+                x: {
+                    title: { display: true, text: 'Date', font: { size: 14 } },
+                    ticks: { font: { size: 10 } }
                 },
                 y: {
-                    title: { 
-                        display: true, 
-                        text: 'Value',
-                        font: { size: 16 }
-                    },
-                    ticks: { font: { size: 12 } },
+                    title: { display: true, text: 'Billions of USD', font: { size: 14 } },
+                    ticks: { font: { size: 10 } },
                     type: scaleType
                 }
             }
         }
     });
+}
+
+function updateStats() {
+    const latestM1 = m1Data.length > 0 ? parseFloat(m1Data[m1Data.length - 1].value).toFixed(2) : '-';
+    const latestM2 = m2Data.length > 0 ? parseFloat(m2Data[m2Data.length - 1].value).toFixed(2) : '-';
+    document.getElementById('latestM1').textContent = latestM1;
+    document.getElementById('latestM2').textContent = latestM2;
+}
+
+function populateDataTable() {
+    const tbody = document.getElementById('dataTableBody');
+    tbody.innerHTML = '';
+    const maxLength = Math.max(m1Data.length, m2Data.length);
+    for (let i = maxLength - 1; i >= 0; i--) {
+        const m1 = m1Data[i] || {};
+        const m2 = m2Data[i] || {};
+        const date = m1.date || m2.date || '-';
+        const m1Value = m1.value ? parseFloat(m1.value).toFixed(2) : '-';
+        const m2Value = m2.value ? parseFloat(m2.value).toFixed(2) : '-';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${date}</td>
+            <td>${m1Value}</td>
+            <td>${m2Value}</td>
+        `;
+        tbody.appendChild(row);
+    }
 }
